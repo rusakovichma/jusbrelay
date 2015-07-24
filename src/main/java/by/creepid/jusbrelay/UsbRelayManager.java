@@ -36,7 +36,10 @@ public interface UsbRelayManager {
     public void closeRelayChannels(UsbRelayDeviceHandler handler) 
             throws UsbRelayException;
     
-    public UsbRelayStatus[] getStatus(UsbRelayDeviceHandler handler) 
+    public UsbRelayStatus[] getStatus(String serialNumber, UsbRelayDeviceHandler handler) 
+            throws UsbRelayException;
+    
+    public void closeRelay(UsbRelayDeviceHandler handler)
             throws UsbRelayException;
     
 }

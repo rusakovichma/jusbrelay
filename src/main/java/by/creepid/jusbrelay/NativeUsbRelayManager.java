@@ -6,8 +6,6 @@
 package by.creepid.jusbrelay;
 
 import by.creepid.jusbrelay.util.NativeHelper;
-import java.io.File;
-import java.io.IOException;
 
 /**
  *
@@ -16,13 +14,8 @@ import java.io.IOException;
 public class NativeUsbRelayManager implements UsbRelayManager {
 
     static {
-        try {
-            File libFile = NativeHelper.findLibFile();
-            System.load(libFile.getAbsolutePath());
-            NativeHelper.cleanupTempFiles();
-        } catch (IOException e) {
-            throw new RuntimeException("Error loading dll" + e.getMessage(), e);
-        }
+        NativeHelper.load("usb_relay_device_", "usb_relay_device");
+        NativeHelper.load("usbrelay_", "usbrelay");
     }
 
     private NativeUsbRelayManager() {
@@ -46,7 +39,10 @@ public class NativeUsbRelayManager implements UsbRelayManager {
 
     public native void closeRelayChannels(UsbRelayDeviceHandler handler);
 
-    public native UsbRelayStatus[] getStatus(UsbRelayDeviceHandler handler);
+    public native UsbRelayStatus[] getStatus(String serialNumber, UsbRelayDeviceHandler handler);
+
+    public native void closeRelay(UsbRelayDeviceHandler handler) 
+            throws UsbRelayException;
 
     public static class InstanceHolder {
 
