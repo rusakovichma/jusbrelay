@@ -18,7 +18,7 @@ import by.creepid.jusbrelay.UsbRelayStatus;
  */
 public class RelayDemo {
 
-    private static final RelayReporter reporter = new StandartRelayReporter();
+    private static final RelayReporter reporter = new StandardRelayReporter();
 
     public static void main(String[] args) {
         UsbRelayManager manager = NativeUsbRelayManager.getInstance();

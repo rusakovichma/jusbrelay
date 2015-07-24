@@ -14,7 +14,7 @@ import java.io.PrintStream;
  *
  * @author rusakovich
  */
-public class StandartRelayReporter implements RelayReporter {
+public class StandardRelayReporter implements RelayReporter {
 
     private PrintStream out = System.out;
 

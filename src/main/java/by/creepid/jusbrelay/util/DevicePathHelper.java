@@ -8,6 +8,8 @@ package by.creepid.jusbrelay.util;
 /**
  *
  * @author rusakovich
+ * 
+ * @see http://community.silabs.com/t5/Interface-Knowledge-Base/Windows-USB-Device-Path/ta-p/114059
  */
 public class DevicePathHelper {
 
