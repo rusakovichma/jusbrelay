@@ -1,1 +1,0 @@
-C:\Progra~1\Java\jdk1.7.0_17\bin\javah.exe -jni -classpath "D:\jusbrelay\target\classes" by.creepid.jusbrelay.NativeUsbRelayManager
