@@ -32,7 +32,7 @@ public class RelayDemo {
             for (int i = 0; i < devices.length; i++) {
                 UsbRelayDeviceInfo usbRelayDeviceInfo = devices[i];
                 reporter.showDeviceInfo(usbRelayDeviceInfo);
-
+                
                 UsbRelayDeviceHandler handler = manager.deviceOpen(usbRelayDeviceInfo.getSerialNumber());
 
                 UsbRelayStatus[] statuses = manager.getStatus(usbRelayDeviceInfo.getSerialNumber(), handler);

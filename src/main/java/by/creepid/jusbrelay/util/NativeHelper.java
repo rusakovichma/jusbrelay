@@ -43,7 +43,7 @@ public class NativeHelper {
     static final String DLL_EXTENSION = ".dll";
     static final String DEFAULT_LIB_FOLDER = "lib";
 
-    public static File findLibFile(String libnameBase, String tempfilePrefix) throws IOException {
+    static File findLibFile(String libnameBase, String tempfilePrefix) throws IOException {
         String libName = buildLibName(libnameBase);
         File libFile = getOverrideLibFile(libName);
         if (libFile == null || libFile.exists() == false) {

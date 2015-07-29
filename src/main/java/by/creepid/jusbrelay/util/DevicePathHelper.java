@@ -5,27 +5,53 @@
  */
 package by.creepid.jusbrelay.util;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  *
  * @author rusakovich
- * 
- * @see http://community.silabs.com/t5/Interface-Knowledge-Base/Windows-USB-Device-Path/ta-p/114059
+ *
+ * @see
+ * http://community.silabs.com/t5/Interface-Knowledge-Base/Windows-USB-Device-Path/ta-p/114059
  */
 public class DevicePathHelper {
+
+    private static final Pattern GUID_PATTERN = Pattern.compile("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
 
     private DevicePathHelper() {
     }
 
+    public static String getDriverGUID(String path) {
+        if (path == null) {
+            return null;
+        }
+
+        Matcher matcher = GUID_PATTERN.matcher(path);
+        if (matcher.find()) {
+            return matcher.group(0);
+        } else {
+            return null;
+        }
+    }
+
     public static String getVID(String path) {
+        if (path == null) {
+            return null;
+        }
+
         int startIndex = path.indexOf("vid_");
         int endIndex = path.indexOf("&pid");
         return path.substring(startIndex + 4, endIndex);
     }
 
     public static String getPID(String path) {
+        if (path == null) {
+            return null;
+        }
+
         int startIndex = path.indexOf("pid_");
         int endIndex = path.indexOf("#", startIndex);
         return path.substring(startIndex + 4, endIndex);
     }
-
 }
