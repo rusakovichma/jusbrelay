@@ -30,7 +30,7 @@ public class DevicePathHelperTest {
      */
     @Test
     public void testGetPID() {
-        System.out.println("***** tedstGetPID ******");
+        System.out.println("***** testGetPID ******");
         String path = "\\\\?\\hid#vi_16c0&pid_05df#6&e6f7797&0&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}";
         String actual = DevicePathHelper.getPID(path);
         String expected = "05df";
@@ -42,7 +42,7 @@ public class DevicePathHelperTest {
      */
     @Test
     public void testGetDriverGUID() {
-        System.out.println("**** getDriverGUID *****");
+        System.out.println("**** testGetDriverGUID *****");
         String path = "\\\\?\\hid#vi_16c0&pid_05df#6&e6f7797&0&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}";
         String actual = DevicePathHelper.getDriverGUID(path);
         String expected = "4d1e55b2-f16f-11cf-88cb-001111000030";
@@ -51,5 +51,17 @@ public class DevicePathHelperTest {
         path = "\\\\?\\hid#vi_16c0&pid_05df#6&e6f7797&0&0000";
         actual = DevicePathHelper.getDriverGUID(path);
         assertNull(actual);
+    }
+
+    /**
+     * Test of getSerial method, of class DevicePathHelper.
+     */
+    @Test
+    public void testGetSerial() {
+        System.out.println("***** testGetSerial ******");
+        String path = "\\\\?\\hid#vid_16c0&pid_05df#6&e6f7797&0&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}";
+        Integer expResult = 0;
+        Integer result = DevicePathHelper.getSerial(path);
+        assertEquals(expResult, result);
     }
 }

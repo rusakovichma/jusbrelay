@@ -17,9 +17,23 @@ import java.util.regex.Pattern;
  */
 public class DevicePathHelper {
 
+    private static final Pattern SERIAL_PATTERN = Pattern.compile("&[0-9]{4}#");
     private static final Pattern GUID_PATTERN = Pattern.compile("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
 
     private DevicePathHelper() {
+    }
+
+    public static Integer getSerial(String path) {
+        if (path == null) {
+            return null;
+        }
+        Matcher matcher = SERIAL_PATTERN.matcher(path);
+        if (matcher.find()) {
+            String serialStr = matcher.group(0).substring(1, 5);
+            return Integer.parseInt(serialStr);
+        } else {
+            return null;
+        }
     }
 
     public static String getDriverGUID(String path) {
