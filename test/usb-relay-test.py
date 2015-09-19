@@ -37,7 +37,7 @@ else:
     return bytes(s)  #bytes(s, "ascii")
  
 libfile = {'nt':   "usb_relay_device.dll", 
-           'posix': "libusb.so;hiddata_libusb01.so;usb_relay_device.so",
+           'posix': "usb_relay_device.so",
            'darwin':"usb_relay_device.dylib",
            } [os.name]
 

@@ -5,14 +5,10 @@
  */
 package by.creepid.jusbrelay.util;
 
-import java.io.Closeable;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
+import java.lang.reflect.Field;
 import java.util.logging.Logger;
+import static by.creepid.jusbrelay.util.PlatformSupport.*;
 
 /**
  *
@@ -23,6 +19,9 @@ public class NativeHelper {
     private static final Logger log = Logger.getLogger(NativeHelper.class.getName());
     private static final int MILLIS_PER_DAY = 86400000;
 
+    private static final PlatformSupport.Platform PLATFORM = PlatformSupport.getPlatform();
+    private static final PlatformSupport.Arch ARCH = PlatformSupport.getArch();
+
     private static final class TempDLLFileFilter implements FileFilter {
 
         private final String tempfilePrefix;
@@ -31,17 +30,22 @@ public class NativeHelper {
             this.tempfilePrefix = tempfilePrefix;
         }
 
-        @Override
+
         public boolean accept(File pathname) {
             String name = pathname.getName();
             return pathname.isFile()
                     && name.startsWith(tempfilePrefix)
-                    && name.endsWith(DLL_EXTENSION);
+                    && name.endsWith(PLATFORM.getExtension());
         }
     }
+
+
     public static final String LIB_DIR_OVERRIDE = "natives_lib_dir";
-    static final String DLL_EXTENSION = ".dll";
     static final String DEFAULT_LIB_FOLDER = "lib";
+
+    static final String EXTRACT_FOLDER = System.getProperty("java.io.tmpdir")
+            + File.separator
+            + LIB_DIR_OVERRIDE;
 
     static File findLibFile(String libnameBase, String tempfilePrefix) throws IOException {
         String libName = buildLibName(libnameBase);
@@ -49,9 +53,22 @@ public class NativeHelper {
         if (libFile == null || libFile.exists() == false) {
             libFile = getDefaultLibFile(libName);
         }
+
+        InputStream source = null;
         if (libFile == null || libFile.exists() == false) {
-            libFile = extractToTempFile(libName, tempfilePrefix);
+            source = NativeHelper.class.getResourceAsStream(
+                    File.separator + DEFAULT_LIB_FOLDER +
+                            File.separator + PLATFORM.toString() +
+                                File.separator + libName);
+        } else {
+            source = new FileInputStream(libFile);
         }
+
+        if (source == null){
+            throw new IllegalStateException("I/O error while reading [" + libName + "] file");
+        }
+
+        libFile = extractToTempFile(source, tempfilePrefix);
         return libFile;
     }
 
@@ -78,7 +95,7 @@ public class NativeHelper {
             }
 
         } catch (Exception e) {
-            log.severe("Error cleaning up temporary dll files. " + e.getMessage());
+            log.severe("Error cleaning up temporary library files. " + e.getMessage());
         }
     }
 
@@ -94,20 +111,23 @@ public class NativeHelper {
         return new File(libDir, libName);
     }
 
-    static File extractToTempFile(String libName, String tempfilePrefix) throws IOException {
-        InputStream source = NativeHelper.class.getResourceAsStream("/" + DEFAULT_LIB_FOLDER + "/" + libName);
+    static File extractToTempFile(InputStream source, String tempfilePrefix) throws IOException {
+        if (PLATFORM == Platform.UNKNOWN){
+            throw new IllegalStateException("Your platform [" + PlatformSupport.OS +"] , " +
+                    "["+PlatformSupport.ARCH+"] not supported yet");
+        }
 
-        String tempFolder = System.getProperty("java.io.tmpdir")
-                + File.separator
-                + LIB_DIR_OVERRIDE
-                + File.separator;
-
-        File tempFile = new File(tempFolder +  tempfilePrefix + DLL_EXTENSION);
+        File tempFile = new File(EXTRACT_FOLDER + File.separator + tempfilePrefix + PLATFORM.getExtension());
         tempFile.getParentFile().mkdir();
+        if (tempFile.exists()) {
+            tempFile.delete();
+        }
         tempFile.createNewFile();
 
         FileOutputStream destination = new FileOutputStream(tempFile);
         copy(source, destination);
+
+        //addLibraryPath(tempFile.getParentFile().getAbsolutePath());
 
         return tempFile;
     }
@@ -138,12 +158,15 @@ public class NativeHelper {
         }
     }
 
+
     private static String buildLibName(String libnameBase) {
-        String arch = "w32";
-        if (!System.getProperty("os.arch").equals("x86")) {
-            arch = System.getProperty("os.arch");
+
+        if (PLATFORM == Platform.UNKNOWN) {
+            throw new IllegalStateException("Your platform [" + PlatformSupport.OS + "] , " +
+                    "[" + PlatformSupport.ARCH + "] not supported yet");
         }
-        return libnameBase + arch + DLL_EXTENSION;
+
+        return libnameBase + ARCH.toString() + PLATFORM.getExtension();
     }
 
     public static void load(String libnameBase, String tempfilePrefix) {
@@ -152,7 +175,28 @@ public class NativeHelper {
             System.load(libFile.getAbsolutePath());
             NativeHelper.cleanupTempFiles(tempfilePrefix);
         } catch (IOException e) {
-            throw new RuntimeException("Error loading dll" + e.getMessage(), e);
+            throw new RuntimeException("Error loading library " + e.getMessage(), e);
+        }
+    }
+
+    static void addLibraryPath(String libPath){
+        String currLibsPath = System.getProperty("java.library.path");
+        if (currLibsPath != null && currLibsPath.contains(libPath)){
+            return;
+        }
+
+        if (currLibsPath != null && !currLibsPath.trim().isEmpty()){
+            System.setProperty("java.library.path", currLibsPath + File.pathSeparator + libPath);
+        }else{
+            System.setProperty("java.library.path",  libPath);
+        }
+
+        try {
+            Field fieldSysPath = ClassLoader.class.getDeclaredField("sys_paths");
+            fieldSysPath.setAccessible(true);
+            fieldSysPath.set(null, null);
+        }catch (Exception ex){
+            throw new IllegalStateException(ex);
         }
     }
 
