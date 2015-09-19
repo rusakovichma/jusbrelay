@@ -6,7 +6,6 @@
 package by.creepid.jusbrelay;
 
 import by.creepid.jusbrelay.util.NativeHelper;
-import by.creepid.jusbrelay.util.PlatformSupport;
 
 /**
  *

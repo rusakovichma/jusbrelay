@@ -127,7 +127,8 @@ public class NativeHelper {
         FileOutputStream destination = new FileOutputStream(tempFile);
         copy(source, destination);
 
-        //addLibraryPath(tempFile.getParentFile().getAbsolutePath());
+        //Add folder to lib path
+        addLibraryPath(tempFile.getParentFile().getAbsolutePath());
 
         return tempFile;
     }
