@@ -19,14 +19,20 @@ import org.junit.Ignore;
  * @author mirash
  */
 public class NativeHelperTest {
-
+    
     @AfterClass
     public static void tearDownClass() {
-
-        System.setProperty(NativeHelper.LIB_DIR_OVERRIDE, "");
-
         File libTempDir = new File(System.getProperty("java.io.tmpdir") + File.separator + "natives_lib_dir");
-        if (libTempDir.exists()){
+
+        if (libTempDir.exists()) {
+            File[] files = libTempDir.listFiles();
+            for (int i = 0; i < files.length; i++) {
+                File file = files[i];
+                file.delete();
+            }
+        }
+
+        if (libTempDir.exists()) {
             libTempDir.delete();
         }
     }

@@ -18,7 +18,6 @@ public class NativeHelper {
 
     private static final Logger log = Logger.getLogger(NativeHelper.class.getName());
     private static final int MILLIS_PER_DAY = 86400000;
-
     private static final PlatformSupport.Platform PLATFORM = PlatformSupport.getPlatform();
     private static final PlatformSupport.Arch ARCH = PlatformSupport.getArch();
 
@@ -30,7 +29,6 @@ public class NativeHelper {
             this.tempfilePrefix = tempfilePrefix;
         }
 
-
         public boolean accept(File pathname) {
             String name = pathname.getName();
             return pathname.isFile()
@@ -38,11 +36,8 @@ public class NativeHelper {
                     && name.endsWith(PLATFORM.getExtension());
         }
     }
-
-
     public static final String LIB_DIR_OVERRIDE = "natives_lib_dir";
     static final String DEFAULT_LIB_FOLDER = "lib";
-
     static final String EXTRACT_FOLDER = System.getProperty("java.io.tmpdir")
             + File.separator
             + LIB_DIR_OVERRIDE;
@@ -57,14 +52,14 @@ public class NativeHelper {
         InputStream source = null;
         if (libFile == null || libFile.exists() == false) {
             source = NativeHelper.class.getResourceAsStream(
-                    File.separator + DEFAULT_LIB_FOLDER +
-                            File.separator + PLATFORM.toString() +
-                                File.separator + libName);
+                    File.separator + DEFAULT_LIB_FOLDER
+                    + File.separator + PLATFORM.toString()
+                    + File.separator + libName);
         } else {
             source = new FileInputStream(libFile);
         }
 
-        if (source == null){
+        if (source == null) {
             throw new IllegalStateException("I/O error while reading [" + libName + "] file");
         }
 
@@ -81,7 +76,7 @@ public class NativeHelper {
             if (tempFolder == null || tempFolder.trim().length() == 0) {
                 return;
             }
-            
+
             File fldr = new File(tempFolder);
             File[] oldFiles = fldr.listFiles(new TempDLLFileFilter(tempfilePrefix));
             if (oldFiles == null) {
@@ -112,20 +107,22 @@ public class NativeHelper {
     }
 
     static File extractToTempFile(InputStream source, String tempfilePrefix) throws IOException {
-        if (PLATFORM == Platform.UNKNOWN){
-            throw new IllegalStateException("Your platform [" + PlatformSupport.OS +"] , " +
-                    "["+PlatformSupport.ARCH+"] not supported yet");
+        if (PLATFORM == Platform.UNKNOWN) {
+            throw new IllegalStateException("Your platform [" + PlatformSupport.OS + "] , "
+                    + "[" + PlatformSupport.ARCH + "] not supported yet");
         }
 
         File tempFile = new File(EXTRACT_FOLDER + File.separator + tempfilePrefix + PLATFORM.getExtension());
         tempFile.getParentFile().mkdir();
+        boolean isTempFileDeleted = true;
         if (tempFile.exists()) {
-            tempFile.delete();
+            isTempFileDeleted = tempFile.delete();
+        } 
+        
+        if (isTempFileDeleted) {
+            FileOutputStream destination = new FileOutputStream(tempFile);
+            copy(source, destination);
         }
-        tempFile.createNewFile();
-
-        FileOutputStream destination = new FileOutputStream(tempFile);
-        copy(source, destination);
 
         //Add folder to lib path
         addLibraryPath(tempFile.getParentFile().getAbsolutePath());
@@ -159,12 +156,11 @@ public class NativeHelper {
         }
     }
 
-
     private static String buildLibName(String libnameBase) {
 
         if (PLATFORM == Platform.UNKNOWN) {
-            throw new IllegalStateException("Your platform [" + PlatformSupport.OS + "] , " +
-                    "[" + PlatformSupport.ARCH + "] not supported yet");
+            throw new IllegalStateException("Your platform [" + PlatformSupport.OS + "] , "
+                    + "[" + PlatformSupport.ARCH + "] not supported yet");
         }
 
         return libnameBase + ARCH.toString() + PLATFORM.getExtension();
@@ -180,25 +176,24 @@ public class NativeHelper {
         }
     }
 
-    static void addLibraryPath(String libPath){
+    static void addLibraryPath(String libPath) {
         String currLibsPath = System.getProperty("java.library.path");
-        if (currLibsPath != null && currLibsPath.contains(libPath)){
+        if (currLibsPath != null && currLibsPath.contains(libPath)) {
             return;
         }
 
-        if (currLibsPath != null && !currLibsPath.trim().isEmpty()){
+        if (currLibsPath != null && !currLibsPath.trim().isEmpty()) {
             System.setProperty("java.library.path", currLibsPath + File.pathSeparator + libPath);
-        }else{
-            System.setProperty("java.library.path",  libPath);
+        } else {
+            System.setProperty("java.library.path", libPath);
         }
 
         try {
             Field fieldSysPath = ClassLoader.class.getDeclaredField("sys_paths");
             fieldSysPath.setAccessible(true);
             fieldSysPath.set(null, null);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             throw new IllegalStateException(ex);
         }
     }
-
 }
