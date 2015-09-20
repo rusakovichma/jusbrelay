@@ -51,10 +51,9 @@ public class NativeHelper {
 
         InputStream source = null;
         if (libFile == null || libFile.exists() == false) {
-            source = NativeHelper.class.getResourceAsStream(
-                    File.separator + DEFAULT_LIB_FOLDER
-                    + File.separator + PLATFORM.toString()
-                    + File.separator + libName);
+            source = NativeHelper.class.getResourceAsStream("/" + DEFAULT_LIB_FOLDER
+                    + "/" + PLATFORM.toString()
+                    + "/" + libName);
         } else {
             source = new FileInputStream(libFile);
         }
