@@ -53,8 +53,10 @@ And dependency:
                 UsbRelayDeviceHandler handler = manager.deviceOpen(usbRelayDeviceInfo.getSerialNumber());
 
                 //change relay status
-				//openRelayChannel(UsbRelayDeviceHandler handler, int index); - for turning on, index - channel number
-				//closeRelayChannel(UsbRelayDeviceHandler handler, int index) - for turning off, index - channel number
+				//manager.openRelayChannel(UsbRelayDeviceHandler handler, int index); - for turning on, index - channel number
+				//manager.closeRelayChannel(UsbRelayDeviceHandler handler, int index) - for turning off, index - channel number
+				//manager.closeRelayChannels(UsbRelayDeviceHandler handler) - for turning off all channels
+				//manager.openRelayChannels(UsbRelayDeviceHandler handler) - for turning on all channels
 
 				//Get device status
                 UsbRelayStatus[] statuses = manager.getStatus(usbRelayDeviceInfo.getSerialNumber(), handler);
