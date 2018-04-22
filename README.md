@@ -37,38 +37,28 @@ And dependency:
 ### Code examples ###
 
 ```JAVA
-		//Create relay manager
- 		UsbRelayManager manager = NativeUsbRelayManager.getInstance();
-        try {
-			//init manager
-            manager.relayInit();
+UsbRelayManager manager = NativeUsbRelayManager.getInstance();
+try {
+	//init manager
+	anager.relayInit();
+	//enumerate devices 
+	UsbRelayDeviceInfo[] devices = manager.deviceEnumerate();
 
-			//enumerate devices 
-            UsbRelayDeviceInfo[] devices = manager.deviceEnumerate();
-
-            for (int i = 0; i < devices.length; i++) {
-                UsbRelayDeviceInfo usbRelayDeviceInfo = devices[i];
-
-				//retrieve device handler            
-                UsbRelayDeviceHandler handler = manager.deviceOpen(usbRelayDeviceInfo.getSerialNumber());
-
-                //change relay status
-				//manager.openRelayChannel(UsbRelayDeviceHandler handler, int index); - for turning on, index - channel number
-				//manager.closeRelayChannel(UsbRelayDeviceHandler handler, int index) - for turning off, index - channel number
-				//manager.closeRelayChannels(UsbRelayDeviceHandler handler) - for turning off all channels
-				//manager.openRelayChannels(UsbRelayDeviceHandler handler) - for turning on all channels
-
-				//Get device status
-                UsbRelayStatus[] statuses = manager.getStatus(usbRelayDeviceInfo.getSerialNumber(), handler);
-
-				//close relay
-                manager.closeRelay(handler);
-            }
-
-        } catch (UsbRelayException ex) {
-            //catch exceptions
-        } finally {
-		   //close manager
-           manager.relayExit();
-        }
+	for (int i = 0; i < devices.length; i++) {
+		UsbRelayDeviceInfo usbRelayDeviceInfo = devices[i];
+		//retrieve device handler            
+		UsbRelayDeviceHandler handler = manager.deviceOpen(usbRelayDeviceInfo.getSerialNumber());
+		//change relay status
+		//turning on the relay, index - channel number
+		//Get device status
+		UsbRelayStatus[] statuses = manager.getStatus(usbRelayDeviceInfo.getSerialNumber(), handler);
+		//close relay
+		manager.closeRelay(handler);
+	}
+} catch (UsbRelayException ex) {
+	//catch exceptions
+} finally {
+	//close manager
+	manager.relayExit();
+}
 ```
