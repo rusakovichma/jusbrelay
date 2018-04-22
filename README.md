@@ -40,7 +40,7 @@ And dependency:
 UsbRelayManager manager = NativeUsbRelayManager.getInstance();
 try {
 	//init manager
-	anager.relayInit();
+	manager.relayInit();
 	//enumerate devices 
 	UsbRelayDeviceInfo[] devices = manager.deviceEnumerate();
 
