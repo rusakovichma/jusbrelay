@@ -57,9 +57,9 @@ try {
       manager.closeRelay(handler);
    }
 } catch (UsbRelayException ex) {
-	//catch exceptions
+      //catch exceptions
 } finally {
-	//close manager
-	manager.relayExit();
+      //close manager
+      manager.relayExit();
 }
 ```
